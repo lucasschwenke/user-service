@@ -1,5 +1,6 @@
 package br.com.mymoney.user.application
 
+import br.com.mymoney.user.common.koin.DatabaseFactory
 import br.com.mymoney.user.common.koin.applicationModule
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
@@ -28,6 +29,8 @@ fun Application.module(testing: Boolean = false) {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
+
+    DatabaseFactory.init()
 
     routing {
         get("/") {
