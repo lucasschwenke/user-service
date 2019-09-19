@@ -43,6 +43,9 @@ dependencies {
     //koin
     compile "org.koin:koin-ktor:$koin_version"
 
+    //utils
+    compile "io.azam.ulidj:ulidj:$ulidj_version"
+
     //DB
     compile "org.jetbrains.exposed:exposed:$exposed_version"
     compile "com.zaxxer:HikariCP:$hikaricp_version"

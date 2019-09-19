@@ -18,6 +18,7 @@ import io.ktor.request.httpMethod
 import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import org.koin.ktor.ext.Koin
@@ -61,6 +62,10 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         route("users") {
+            post {
+                call.respond(userController.insertUser(this.call))
+            }
+
             get("/{id}") {
                 call.respond(userController.getUser(this.call))
             }
