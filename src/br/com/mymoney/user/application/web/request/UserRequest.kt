@@ -10,10 +10,12 @@ import br.com.mymoney.user.domain.exception.BadRequestException
 import br.com.mymoney.user.domain.model.User
 import br.com.mymoney.user.domain.util.ValidatorUtil
 
-data class UserRequest(val name: String,
-                       val lastName: String,
-                       val email: String,
-                       val taxIdentifier: String
+data class UserRequest(
+    val id: String? = null,
+    val name: String,
+    val lastName: String,
+    val email: String,
+    val taxIdentifier: String
 ) {
 
     fun validation() {

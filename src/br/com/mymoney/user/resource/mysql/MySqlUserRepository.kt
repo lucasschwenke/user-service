@@ -1,5 +1,6 @@
 package br.com.mymoney.user.resource.mysql
 
+import br.com.mymoney.user.domain.exception.PersistenceFailedException
 import br.com.mymoney.user.domain.model.User
 import br.com.mymoney.user.domain.repository.UserRepository
 import br.com.mymoney.user.domain.util.toJavaLocalDateTime
@@ -31,7 +32,7 @@ class MySqlUserRepository: UserRepository {
                         )
                     }
             } catch (e: Exception) {
-                throw RuntimeException(e)
+                throw PersistenceFailedException(e)
             }
         }
 
@@ -52,7 +53,7 @@ class MySqlUserRepository: UserRepository {
 
                 user.copy(id = ulid)
             } catch (e: Exception) {
-                throw RuntimeException(e)
+                throw PersistenceFailedException(e)
             }
         }
 
