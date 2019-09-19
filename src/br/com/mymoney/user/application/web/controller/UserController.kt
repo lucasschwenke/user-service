@@ -24,6 +24,7 @@ class UserController(private val userService: UserService) {
 
     suspend fun insertUser(call: ApplicationCall) = call.receive<UserRequest>()
         .run {
+            this.validation()
             userService.insertUser(this.toUser())
         }.let {
             UserResponse(it)

@@ -45,6 +45,8 @@ dependencies {
 
     //utils
     compile "io.azam.ulidj:ulidj:$ulidj_version"
+    compile "br.com.caelum.stella:caelum-stella-core:$caelum_stella_core"
+    compile "commons-validator:commons-validator:$commons_validator"
 
     //DB
     compile "org.jetbrains.exposed:exposed:$exposed_version"

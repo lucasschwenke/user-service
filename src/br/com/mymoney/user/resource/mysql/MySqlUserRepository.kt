@@ -2,8 +2,8 @@ package br.com.mymoney.user.resource.mysql
 
 import br.com.mymoney.user.domain.model.User
 import br.com.mymoney.user.domain.repository.UserRepository
-import br.com.mymoney.user.domain.utils.toJavaLocalDateTime
-import br.com.mymoney.user.domain.utils.toJodaDateTime
+import br.com.mymoney.user.domain.util.toJavaLocalDateTime
+import br.com.mymoney.user.domain.util.toJodaDateTime
 import br.com.mymoney.user.resource.persisntece.table.UserTable
 import io.azam.ulidj.ULID
 import org.jetbrains.exposed.sql.andWhere

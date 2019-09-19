@@ -1,4 +1,4 @@
-package br.com.mymoney.user.domain.utils
+package br.com.mymoney.user.domain.util
 
 import org.joda.time.DateTime
 import org.joda.time.LocalDate
