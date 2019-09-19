@@ -1,5 +1,6 @@
 package br.com.mymoney.user.application
 
+import br.com.mymoney.user.application.web.controller.UserController
 import br.com.mymoney.user.common.koin.DatabaseFactory
 import br.com.mymoney.user.common.koin.applicationModule
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -7,13 +8,13 @@ import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
-import io.ktor.http.ContentType
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.get
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import org.koin.ktor.ext.Koin
+import org.koin.ktor.ext.inject
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -32,13 +33,13 @@ fun Application.module(testing: Boolean = false) {
 
     DatabaseFactory.init()
 
-    routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
+    val userController: UserController by inject()
 
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
+    routing {
+        route("users") {
+            get("/{id}") {
+                call.respond(userController.getUser(this.call))
+            }
         }
     }
 }

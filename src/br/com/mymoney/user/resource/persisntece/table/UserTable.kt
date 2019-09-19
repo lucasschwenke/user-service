@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime
 
-object User : Table() {
+object UserTable : Table("user") {
     val id: Column<String> = varchar("id", 255).primaryKey()
     val name: Column<String> = varchar("name", 100)
     val lastName: Column<String> = varchar("last_name", 100)
