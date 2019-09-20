@@ -26,5 +26,6 @@ data class ErrorResponse(
 enum class ApiError {
     RESOURCE_NOT_FOUND,
     BAD_REQUEST,
-    PERSISTENCE_FAILED
+    PERSISTENCE_FAILED,
+    CONFLICT
 }

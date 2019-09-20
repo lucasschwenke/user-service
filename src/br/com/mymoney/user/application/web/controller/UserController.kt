@@ -14,13 +14,8 @@ class UserController(private val userService: UserService) {
         .run {
             userService.getUser(this)
         }.let {
-                UserResponse(
-                    id = it.id!!,
-                    name = it.name,
-                    lastName = it.lastName,
-                    email = it.email
-                )
-            }
+            UserResponse(it)
+        }
 
     suspend fun insertUser(call: ApplicationCall) = call.receive<UserRequest>()
         .run {
@@ -32,4 +27,11 @@ class UserController(private val userService: UserService) {
             call.response.status(HttpStatusCode.Created)
         }
 
+    suspend fun updateUser(call: ApplicationCall) = call.receive<UserRequest>()
+        .run {
+            this.validation()
+            userService.update(this.toUser())
+        }.let {
+            UserResponse(it)
+        }
 }

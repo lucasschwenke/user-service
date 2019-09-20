@@ -9,5 +9,5 @@ data class User(
     val email: String,
     val taxIdentifier: String,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    val updatedAt: LocalDateTime? = null
 )

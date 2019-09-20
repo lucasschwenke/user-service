@@ -11,7 +11,6 @@ import br.com.mymoney.user.domain.model.User
 import br.com.mymoney.user.domain.util.ValidatorUtil
 
 data class UserRequest(
-    val id: String? = null,
     val name: String,
     val lastName: String,
     val email: String,
@@ -27,10 +26,10 @@ data class UserRequest(
         }
 
         lastName.run {
-            if (this.isBlank()) throw BadRequestException("The last_name is blank.")
+            if (this.isBlank()) throw BadRequestException("The last name is blank.")
 
             if (this.length < MIN_LAST_NAME_LENGTH || this.length > MAX_LAST_NAME_LENGTH)
-                throw BadRequestException("The last_name is not a valid length.")
+                throw BadRequestException("The last name is not a valid length.")
         }
 
         email.run {
@@ -43,10 +42,10 @@ data class UserRequest(
         }
 
         taxIdentifier.run {
-            if (this.isBlank()) throw BadRequestException("The tax_identifier is blank.")
+            if (this.isBlank()) throw BadRequestException("The tax identifier is blank.")
 
             if (!ValidatorUtil.validateTaxIdentifier(this))
-                throw BadRequestException("The tax_identifier $taxIdentifier is not valid.")
+                throw BadRequestException("The tax identifier $taxIdentifier is not valid.")
         }
     }
 

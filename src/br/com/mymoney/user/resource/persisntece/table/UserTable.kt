@@ -11,5 +11,5 @@ object UserTable : Table("user") {
     val email: Column<String> = varchar("email", 100)
     val taxIdentifier: Column<String> = varchar("tax_identifier", 100)
     val createdAt: Column<DateTime> = datetime("created_at")
-    val updatedAt: Column<DateTime> = datetime("updated_at")
+    val updatedAt: Column<DateTime?> = datetime("updated_at").nullable()
 }

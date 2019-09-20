@@ -17,10 +17,7 @@ import io.ktor.jackson.jackson
 import io.ktor.request.httpMethod
 import io.ktor.request.uri
 import io.ktor.response.respond
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
-import io.ktor.routing.routing
+import io.ktor.routing.*
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
 
@@ -62,12 +59,16 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         route("users") {
+            get("/{id}") {
+                call.respond(userController.getUser(this.call))
+            }
+
             post {
                 call.respond(userController.insertUser(this.call))
             }
 
-            get("/{id}") {
-                call.respond(userController.getUser(this.call))
+            put {
+                call.respond(userController.updateUser(this.call))
             }
         }
     }
