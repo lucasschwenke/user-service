@@ -58,6 +58,8 @@ dependencies {
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
     testCompile "com.h2database:h2:$h2_version"
     testCompile "io.mockk:mockk:$mockk_version"
+    testCompile "org.assertj:assertj-core:$assertj_version"
+
 }
 
 flyway {

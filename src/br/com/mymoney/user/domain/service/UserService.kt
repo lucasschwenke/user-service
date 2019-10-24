@@ -15,7 +15,7 @@ class UserService(private val userRepository: UserRepository) {
         checkDuplicateEmail(user.email)
 
         userRepository.findUserBy(taxIdentifier = user.taxIdentifier)?.run {
-            throw ConflictException("The tax identifier $taxIdentifier has already been registered.")
+            throw ConflictException("The tax identifier ${user.taxIdentifier} has already been registered.")
         }
 
         return userRepository.insert(user)
