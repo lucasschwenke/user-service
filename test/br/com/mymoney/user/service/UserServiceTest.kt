@@ -1,5 +1,6 @@
-package br.com.mymoney.br.com.mymoney.user.service
+package br.com.mymoney.user.service
 
+import br.com.mymoney.user.domain.exception.BadRequestException
 import br.com.mymoney.user.domain.exception.ConflictException
 import br.com.mymoney.user.domain.exception.ResourceNotFoundException
 import br.com.mymoney.user.domain.model.User
@@ -16,6 +17,13 @@ import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 
 class UserServiceTest {
+
+    companion object {
+        const val NAME = "Piccolo"
+        const val LAST_NAME = "Namekusei"
+        const val EMAIL = "gohan.sayadin@mailinator.com"
+        const val TAX_IDENTIFIER = "85425748000"
+    }
 
     private val userRepository = mockk<UserRepository>()
     private val userService = UserService(userRepository)
@@ -70,19 +78,11 @@ class UserServiceTest {
     }
 
     @Test
-    fun `test`() {
-        val email = "gohan.sayadin@mailinator.com"
-        val taxIdentifier = "85425748000"
+    fun `should create a new user`() {
+        val newUser = generateNewUser()
 
-        val newUser = User(
-            name = "Piccolo",
-            lastName = "Namekusei",
-            email = email,
-            taxIdentifier = taxIdentifier
-        )
-
-        every { userRepository.findUserBy(email = email) } returns null
-        every { userRepository.findUserBy(taxIdentifier = taxIdentifier) } returns null
+        every { userRepository.findUserBy(email = newUser.email) } returns null
+        every { userRepository.findUserBy(taxIdentifier = newUser.taxIdentifier) } returns null
         every { userRepository.insert(newUser) } returns newUser.copy(
             id = ULID.random(),
             createdAt = LocalDateTime.now()
@@ -94,58 +94,114 @@ class UserServiceTest {
             assertNotNull(this.id)
 
             assertNotNull(this.name)
-            assertThat(this.name).isEqualTo("Piccolo")
+            assertThat(this.name).isEqualTo(NAME)
 
             assertNotNull(this.lastName)
-            assertThat(this.lastName).isEqualTo("Namekusei")
+            assertThat(this.lastName).isEqualTo(LAST_NAME)
 
             assertNotNull(this.email)
-            assertThat(this.email).isEqualTo(email)
+            assertThat(this.email).isEqualTo(EMAIL)
 
             assertNotNull(this.taxIdentifier)
-            assertThat(this.taxIdentifier).isEqualTo(taxIdentifier)
+            assertThat(this.taxIdentifier).isEqualTo(TAX_IDENTIFIER)
 
             assertNotNull(this.createdAt)
         }
     }
 
     @Test
-    fun `test2`() {
-        val email = "gohan.sayadin@mailinator.com"
+    fun `should thrown an exception when there is a user with same email`() {
+        val newUser = generateNewUser()
 
-        val newUser = User(
-            name = "Piccolo",
-            lastName = "Namekusei",
-            email = email,
-            taxIdentifier = "85425748000"
-        )
-
-        every { userRepository.findUserBy(email = email) } returns validUser
+        every { userRepository.findUserBy(email = newUser.email) } returns validUser
 
         assertThatThrownBy { userService.insertUser(newUser) }
             .isExactlyInstanceOf(ConflictException::class.java)
-            .hasMessage("The email $email has already been registered.")
+            .hasMessage("The email ${newUser.email} has already been registered.")
     }
 
     @Test
-    fun `test3`() {
-        val taxIdentifier = "85425748000"
-        val email = "gohan.sayadin@mailinator.com"
+    fun `should thrown an exception when there is a user with same tax identifier`() {
+        val newUser = generateNewUser()
 
-        val newUser = User(
-            name = "Piccolo",
-            lastName = "Namekusei",
-            email = email,
-            taxIdentifier = taxIdentifier
-        )
-
-        every { userRepository.findUserBy(email = email) } returns null
-        every { userRepository.findUserBy(taxIdentifier = taxIdentifier) } returns validUser
+        every { userRepository.findUserBy(email = newUser.email) } returns null
+        every { userRepository.findUserBy(taxIdentifier = newUser.taxIdentifier) } returns validUser
 
         assertThatThrownBy { userService.insertUser(newUser) }
             .isExactlyInstanceOf(ConflictException::class.java)
-            .hasMessage("The tax identifier $taxIdentifier has already been registered.")
+            .hasMessage("The tax identifier ${newUser.taxIdentifier} has already been registered.")
     }
 
+    @Test
+    fun `should update a exists user`() {
+        val updateUser = generateUpdateUser()
+
+        val mergedUser = updateUser.copy(id = validUser.id)
+
+        every { userRepository.findUserBy(taxIdentifier = updateUser.taxIdentifier) } returns validUser
+        every { userRepository.findUserBy(email = updateUser.email) } returns null
+        every { userRepository.update(mergedUser) } returns mergedUser.copy(
+            updatedAt = LocalDateTime.now()
+        )
+
+        val userReturned = userService.update(updateUser)
+
+        userReturned.apply {
+            assertNotNull(this.id)
+            assertThat(this.id).isEqualTo(validUser.id)
+
+            assertNotNull(this.name)
+            assertThat(this.name).isEqualTo(NAME)
+
+            assertNotNull(this.lastName)
+            assertThat(this.lastName).isEqualTo(LAST_NAME)
+
+            assertNotNull(this.email)
+            assertThat(this.email).isEqualTo(EMAIL)
+
+            assertNotNull(this.taxIdentifier)
+            assertThat(this.taxIdentifier).isEqualTo(validUser.taxIdentifier)
+        }
+    }
+
+    @Test
+    fun `should thrown an exception when not found user with tax identifier`() {
+        val updateUser = generateUpdateUser()
+
+        every { userRepository.findUserBy(taxIdentifier = updateUser.taxIdentifier) } returns null
+
+        assertThatThrownBy { userService.update(updateUser) }
+            .isExactlyInstanceOf(BadRequestException::class.java)
+            .hasMessage("User with tax identifier ${updateUser.taxIdentifier} not found.")
+    }
+
+    @Test
+    fun `should thrown an exception when there is user with same email`() {
+        val updateUser = generateUpdateUser()
+
+        every { userRepository.findUserBy(taxIdentifier = updateUser.taxIdentifier) } returns validUser
+        every { userRepository.findUserBy(email = updateUser.email) } returns updateUser.copy()
+
+        assertThatThrownBy { userService.update(updateUser) }
+            .isExactlyInstanceOf(ConflictException::class.java)
+            .hasMessage("The email ${updateUser.email} has already been registered.")
+    }
+
+    private fun generateUpdateUser() =
+        User(
+            name = NAME,
+            lastName = LAST_NAME,
+            email = EMAIL,
+            taxIdentifier = validUser.taxIdentifier
+        )
+
+
+    private fun generateNewUser() =
+        User(
+            name = NAME,
+            lastName = LAST_NAME,
+            email = EMAIL,
+            taxIdentifier = TAX_IDENTIFIER
+        )
 
 }

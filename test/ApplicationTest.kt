@@ -1,3 +1,4 @@
+/*
 package br.com.mymoney
 
 import br.com.mymoney.user.application.module
@@ -19,3 +20,4 @@ class ApplicationTest {
         }
     }
 }
+*/
