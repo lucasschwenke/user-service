@@ -1,7 +1,6 @@
 package br.com.mymoney.user.service
 
 import br.com.mymoney.user.domain.exception.BadRequestException
-import br.com.mymoney.user.domain.exception.ConflictException
 import br.com.mymoney.user.domain.exception.ResourceNotFoundException
 import br.com.mymoney.user.domain.model.User
 import br.com.mymoney.user.domain.repository.UserRepository
@@ -116,7 +115,7 @@ class UserServiceTest {
         every { userRepository.findUserBy(email = newUser.email) } returns validUser
 
         assertThatThrownBy { userService.insertUser(newUser) }
-            .isExactlyInstanceOf(ConflictException::class.java)
+            .isExactlyInstanceOf(BadRequestException::class.java)
             .hasMessage("The email ${newUser.email} has already been registered.")
     }
 
@@ -128,7 +127,7 @@ class UserServiceTest {
         every { userRepository.findUserBy(taxIdentifier = newUser.taxIdentifier) } returns validUser
 
         assertThatThrownBy { userService.insertUser(newUser) }
-            .isExactlyInstanceOf(ConflictException::class.java)
+            .isExactlyInstanceOf(BadRequestException::class.java)
             .hasMessage("The tax identifier ${newUser.taxIdentifier} has already been registered.")
     }
 
@@ -183,7 +182,7 @@ class UserServiceTest {
         every { userRepository.findUserBy(email = updateUser.email) } returns updateUser.copy()
 
         assertThatThrownBy { userService.update(updateUser) }
-            .isExactlyInstanceOf(ConflictException::class.java)
+            .isExactlyInstanceOf(BadRequestException::class.java)
             .hasMessage("The email ${updateUser.email} has already been registered.")
     }
 

@@ -10,17 +10,20 @@ abstract class ApiException : Exception {
     abstract fun httpStatus(): HttpStatusCode
     abstract fun apiError(): ApiError
     abstract fun userResponseMessage(): String
+    open fun details() = emptyMap<String, List<String>>()
 
     fun createErrorResponse() =
         ErrorResponse(
             apiError = apiError(),
-            errorDetails = userResponseMessage()
+            message = userResponseMessage(),
+            details = details()
         )
 }
 
 data class ErrorResponse(
     val apiError: ApiError,
-    val errorDetails: String
+    val message: String,
+    val details: Map<String, List<String>>? = null
 )
 
 enum class ApiError {

@@ -1,7 +1,6 @@
 package br.com.mymoney.user.domain.service
 
 import br.com.mymoney.user.domain.exception.BadRequestException
-import br.com.mymoney.user.domain.exception.ConflictException
 import br.com.mymoney.user.domain.exception.ResourceNotFoundException
 import br.com.mymoney.user.domain.model.User
 import br.com.mymoney.user.domain.repository.UserRepository
@@ -15,7 +14,7 @@ class UserService(private val userRepository: UserRepository) {
         checkDuplicateEmail(user.email)
 
         userRepository.findUserBy(taxIdentifier = user.taxIdentifier)?.run {
-            throw ConflictException("The tax identifier ${user.taxIdentifier} has already been registered.")
+            throw BadRequestException("The tax identifier ${user.taxIdentifier} has already been registered.")
         }
 
         return userRepository.insert(user)
@@ -39,5 +38,5 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     private fun checkDuplicateEmail(email: String) = userRepository.findUserBy(email = email)
-        ?.run { throw ConflictException("The email $email has already been registered.") }
+        ?.run { throw BadRequestException("The email $email has already been registered.") }
 }

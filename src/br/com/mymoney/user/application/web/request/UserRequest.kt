@@ -1,14 +1,14 @@
 package br.com.mymoney.user.application.web.request
 
+import br.com.mymoney.user.application.web.request.validation.*
 import br.com.mymoney.user.application.web.request.validation.ValidationRules.MAX_LAST_NAME_LENGTH
 import br.com.mymoney.user.application.web.request.validation.ValidationRules.MAX_USER_EMAIL_LENGTH
 import br.com.mymoney.user.application.web.request.validation.ValidationRules.MAX_USER_NAME_LENGTH
 import br.com.mymoney.user.application.web.request.validation.ValidationRules.MIN_LAST_NAME_LENGTH
 import br.com.mymoney.user.application.web.request.validation.ValidationRules.MIN_USER_EMAIL_LENGTH
 import br.com.mymoney.user.application.web.request.validation.ValidationRules.MIN_USER_NAME_LENGTH
-import br.com.mymoney.user.domain.exception.BadRequestException
+import br.com.mymoney.user.domain.exception.ValidationException
 import br.com.mymoney.user.domain.model.User
-import br.com.mymoney.user.domain.util.ValidatorUtil
 
 data class UserRequest(
     val name: String,
@@ -18,34 +18,28 @@ data class UserRequest(
 ) {
 
     fun validation() {
-        name.run {
-            if (this.isBlank()) throw BadRequestException("The name is blank.")
+        val validations = listOf(
+            Validation("name", name).isNullOrBlank(),
+            Validation("name", name).isValidLength(MIN_USER_NAME_LENGTH, MAX_USER_NAME_LENGTH),
+            Validation("last_name", lastName).isNullOrBlank(),
+            Validation("last_name", lastName).isValidLength(MIN_LAST_NAME_LENGTH, MAX_LAST_NAME_LENGTH),
+            Validation("email", email).isNullOrBlank(),
+            Validation("email", email).isValidLength(MIN_USER_EMAIL_LENGTH, MAX_USER_EMAIL_LENGTH),
+            Validation("email", email).isValidEmail(),
+            Validation("tax_identifier", taxIdentifier).isNullOrBlank(),
+            Validation("tax_identifier", taxIdentifier).isValidTaxIdentifier()
+        )
 
-            if (this.length < MIN_USER_NAME_LENGTH || this.length > MAX_USER_NAME_LENGTH)
-                throw BadRequestException("The name is not a valid length.")
-        }
+        val errorsMap = validations
+            .filter {
+                it.errorMessageList.isNotEmpty()
+            }
+            .associateBy(
+                { it.fieldName }, { it.errorMessageList }
+            )
 
-        lastName.run {
-            if (this.isBlank()) throw BadRequestException("The last name is blank.")
-
-            if (this.length < MIN_LAST_NAME_LENGTH || this.length > MAX_LAST_NAME_LENGTH)
-                throw BadRequestException("The last name is not a valid length.")
-        }
-
-        email.run {
-            if (this.isBlank()) throw BadRequestException("The email is blank.")
-
-            if (this.length < MIN_USER_EMAIL_LENGTH || this.length > MAX_USER_EMAIL_LENGTH)
-                throw BadRequestException("The email is not a valid length.")
-
-            if (!ValidatorUtil.validateEmail(this)) throw BadRequestException("The email $email is not valid.")
-        }
-
-        taxIdentifier.run {
-            if (this.isBlank()) throw BadRequestException("The tax identifier is blank.")
-
-            if (!ValidatorUtil.validateTaxIdentifier(this))
-                throw BadRequestException("The tax identifier $taxIdentifier is not valid.")
+        if (errorsMap.isNotEmpty()) {
+            throw ValidationException(errorsMap)
         }
     }
 
